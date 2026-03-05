@@ -1,0 +1,164 @@
+{
+  "name": "Workflow 2 - AI + Sentiment",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "testai",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5e23b095-d1e2-4270-b4a5-a34cb8ca9e14",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        16
+      ],
+      "webhookId": "23a158d9-cefe-45d0-ad16-031f8cac3f16"
+    },
+    {
+      "parameters": {
+        "prompt": "=Write 3 bullet points about: {{ $json.body.topic }}"
+      },
+      "id": "5b20aac7-82e4-4360-bd6e-d6fee53f54a6",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "model": "mistralai/mistral-nemo",
+        "options": {}
+      },
+      "id": "783cb553-96e5-455a-b9e9-252e504d58f5",
+      "name": "OpenRouter Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        256
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "7fMPUE33VcuU4q2S",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "options": {}
+      },
+      "id": "c14b9d31-e07a-4cd1-9eac-27e7d107db7d",
+      "name": "Sentiment Analysis",
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1,
+      "position": [
+        288,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "8fd1c33e-7a44-4e19-87f0-1c8702727bf7",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        688,
+        16
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0d9084b5-fbd6-4215-902c-e2fb5986715a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a9f2af44d9c9b394160081a6a2684c4239c5ae89204cf3a849577c51642689a2"
+  },
+  "id": "v5RqPGTacgfQwOYT",
+  "tags": []
+}
